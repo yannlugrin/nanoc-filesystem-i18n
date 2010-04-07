@@ -413,14 +413,14 @@ class Nanoc3::DataSources::FilesystemUnifiedTest < MiniTest::Unit::TestCase
     # Create object without period
     data_source.send(:create_object, 'foo', 'some content', { :some => 'attributes' }, '/asdf/')
     assert File.file?('foo/asdf.html')
-    data = data_source.send(:parse, 'foo/asdf.html', 'foo/asdf.yaml', 'moo')
+    data = data_source.send(:parse, 'foo/asdf.html', 'foo/asdf.yaml', 'moo', false)
     assert_equal({ 'some' => 'attributes' }, data[0])
     assert_equal('some content',             data[1])
 
     # Create object with period
     data_source.send(:create_object, 'foo', 'some content', { :some => 'attributes' }, '/as.df/')
     assert File.file?('foo/as.df.html')
-    data = data_source.send(:parse, 'foo/as.df.html', 'foo/asdf.yaml', 'moo')
+    data = data_source.send(:parse, 'foo/as.df.html', 'foo/asdf.yaml', 'moo', false)
     assert_equal({ 'some' => 'attributes' }, data[0])
     assert_equal('some content',             data[1])
   end
@@ -432,7 +432,7 @@ class Nanoc3::DataSources::FilesystemUnifiedTest < MiniTest::Unit::TestCase
     # Create object without period
     data_source.send(:create_object, 'foo', 'some content', { :some => 'attributes' }, '/asdf/')
     assert File.file?('foo/asdf.html')
-    data = data_source.send(:parse, 'foo/asdf.html', 'foo/asdf.yaml', 'moo')
+    data = data_source.send(:parse, 'foo/asdf.html', 'foo/asdf.yaml', 'moo', false)
     assert_equal({ 'some' => 'attributes' }, data[0])
     assert_equal('some content',             data[1])
 

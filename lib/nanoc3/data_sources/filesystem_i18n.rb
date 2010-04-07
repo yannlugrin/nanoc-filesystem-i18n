@@ -407,7 +407,7 @@ module Nanoc3::DataSources
     # Parses the file named `filename` and returns an array with its first
     # element a hash with the file's metadata, and with its second element the
     # file content itself.
-    def parse(content_filename, meta_filename, kind, is_binary=false)
+    def parse(content_filename, meta_filename, kind, is_binary)
       # Read content and metadata from separate files
       if meta_filename || is_binary
         meta = (meta_filename && YAML.load_file(meta_filename)) || {}
