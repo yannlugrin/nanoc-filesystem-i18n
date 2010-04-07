@@ -11,7 +11,9 @@ class Nanoc3::DataSources::FilesystemVerboseTest < MiniTest::Unit::TestCase
     site = Nanoc3::Site.new({})
 
     # Create data source
-    data_source = Nanoc3::DataSources::FilesystemVerbose.new(site, nil, nil, params)
+    # I18n: call `up` to setup locale config
+    data_source = Nanoc3::DataSources::FilesystemI18n.new(site, nil, nil, params)
+    data_source.up
 
     # Done
     data_source
@@ -71,7 +73,7 @@ class Nanoc3::DataSources::FilesystemVerboseTest < MiniTest::Unit::TestCase
     File.open('content/foo/foo.css', 'w') do |io|
       io.write('body.foo {}')
     end
-    
+
     # Create foo.bar.css
     FileUtils.mkdir_p('content/foo.bar')
     File.open('content/foo.bar/foo.bar.yaml', 'w') do |io|
@@ -80,10 +82,10 @@ class Nanoc3::DataSources::FilesystemVerboseTest < MiniTest::Unit::TestCase
     File.open('content/foo.bar/foo.bar.css', 'w') do |io|
       io.write('body.foobar {}')
     end
-    
+
     # Load
     items = data_source.items
-    
+
     # Check
     assert_equal 2, items.size
     assert_equal '/foo/',                        items[0].identifier
@@ -168,7 +170,7 @@ class Nanoc3::DataSources::FilesystemVerboseTest < MiniTest::Unit::TestCase
     File.open('layouts/foo/foo.html', 'w') do |io|
       io.write('body.foo {}')
     end
-    
+
     # Create bar.html.erb
     FileUtils.mkdir_p('layouts/bar')
     File.open('layouts/bar/bar.yaml', 'w') do |io|
@@ -177,10 +179,10 @@ class Nanoc3::DataSources::FilesystemVerboseTest < MiniTest::Unit::TestCase
     File.open('layouts/bar/bar.html.erb', 'w') do |io|
       io.write('body.foobar {}')
     end
-    
+
     # Load
     layouts = data_source.layouts.sort_by { |i| i.identifier }
-    
+
     # Check
     assert_equal 2, layouts.size
     assert_equal '/bar/', layouts[0].identifier
@@ -200,7 +202,7 @@ class Nanoc3::DataSources::FilesystemVerboseTest < MiniTest::Unit::TestCase
     File.open('layouts/foo/foo.html', 'w') do |io|
       io.write('body.foo {}')
     end
-    
+
     # Create bar.html.erb
     FileUtils.mkdir_p('layouts/bar.xyz')
     File.open('layouts/bar.xyz/bar.xyz.yaml', 'w') do |io|
@@ -209,61 +211,16 @@ class Nanoc3::DataSources::FilesystemVerboseTest < MiniTest::Unit::TestCase
     File.open('layouts/bar.xyz/bar.xyz.html', 'w') do |io|
       io.write('body.foobar {}')
     end
-    
+
     # Load
     layouts = data_source.layouts.sort_by { |i| i.identifier }
-    
+
     # Check
     assert_equal 2, layouts.size
     assert_equal '/bar.xyz/', layouts[0].identifier
     assert_equal 'meow',      layouts[0][:cat]
     assert_equal '/foo/',     layouts[1].identifier
     assert_equal 'woof',      layouts[1][:dog]
-  end
-
-  def test_create_item_at_root
-    # Create item
-    data_source = new_data_source
-    data_source.create_item('content here', { :foo => 'bar' }, '/')
-
-    # Check file existance
-    assert File.directory?('content')
-    assert File.file?('content/content.html')
-    assert File.file?('content/content.yaml')
-
-    # Check file content
-    assert_equal 'content here', File.read('content/content.html')
-    assert_match 'foo: bar',     File.read('content/content.yaml')
-  end
-
-  def test_create_item_not_at_root
-    # Create item
-    data_source = new_data_source
-    data_source.create_item('content here', { :foo => 'bar' }, '/moo/')
-
-    # Check file existance
-    assert File.directory?('content/moo')
-    assert File.file?('content/moo/moo.html')
-    assert File.file?('content/moo/moo.yaml')
-
-    # Check file content
-    assert_equal 'content here', File.read('content/moo/moo.html')
-    assert_match 'foo: bar',     File.read('content/moo/moo.yaml')
-  end
-
-  def test_create_layout
-    # Create layout
-    data_source = new_data_source
-    data_source.create_layout('content here', { :foo => 'bar' }, '/moo/')
-
-    # Check file existance
-    assert File.directory?('layouts/moo')
-    assert File.file?('layouts/moo/moo.html')
-    assert File.file?('layouts/moo/moo.yaml')
-
-    # Check file content
-    assert_equal 'content here', File.read('layouts/moo/moo.html')
-    assert_match 'foo: bar',     File.read('layouts/moo/moo.yaml')
   end
 
   def test_load_binary_objects

@@ -58,16 +58,27 @@ module Nanoc3::DataSources
     # See {Nanoc3::DataSource#up}.
     def up
       if !@locale_config
-        # Default empty config for nanoc filesystem data source compatibility
+        # Default empty config for nanoc filesystem data source compatibility,
+        # by default locale system is disable and all content is not localized
+        @config                       ||= {}
         @config[:locale]              ||= {}
         @config[:locale][:availables] ||= {}
+        @config[:locale][:exclude]    ||= {}
+
+        # Exclude all item if no locale is available
+        @config[:locale][:exclude][:layout] ||= @config[:locale][:availables].empty? ? ['*'] : []
+        @config[:locale][:exclude][:item]   ||= @config[:locale][:availables].empty? ? ['*'] : []
 
         # Load locale config
         @locale_config = @config[:locale].symbolize_keys
 
         # Configure I18n module with default value callback
-        I18n.default_locale = begin @locale_config[:availables].find{|code, data| data[:default] }[0] rescue :en end
-        I18n.available_locales = @locale_config[:availables].empty? ? [I18n.default_locale] : @locale_config[:availables].map {|code, data| code.to_sym }
+        if !@config[:locale][:availables].empty?
+          I18n.default_locale = begin @locale_config[:availables].find{|code, data| data[:default] }[0] rescue @config[:locale][:availables].first[0]  end
+        else
+          I18n.default_locale = nil
+        end
+        I18n.available_locales = @locale_config[:availables].empty? ? [] : @locale_config[:availables].map {|code, data| code.to_sym }
       end
     end
 
@@ -111,31 +122,26 @@ module Nanoc3::DataSources
     # the given identifier. The file will have its attributes taken from the
     # attributes hash argument and its content from the content argument.
     def create_object(dir_name, content, attributes, identifier, params={})
-      # Determine base path
-      last_component = identifier.split('/')[-1] || dir_name
-      base_path = dir_name + identifier + last_component
+      # Check for periods
+      if (@config.nil? || !@config[:allow_periods_in_identifiers]) && identifier.include?('.')
+        raise RuntimeError,
+          "Attempted to create an object in #{dir_name} with identifier #{identifier} containing a period, but allow_periods_in_identifiers is not enabled in the site configuration. (Enabling allow_periods_in_identifiers may cause the site to break, though.)"
+      end
 
       # Get filenames
       ext = params[:extension] || '.html'
-      dir_path          = dir_name + identifier
-      meta_filename     = dir_name + identifier + last_component + '.yaml'
-      content_filenames = {}
-      i18n.available_locales.each do |locale|
-        content_filenames[locale] = dir_name + identifier + last_component + ".#{locale}" + ext
-      end
+      meta_filename    = dir_name + (identifier == '/' ? '/index.yaml' : identifier[0..-2] + '.yaml')
+      content_filename = dir_name + (identifier == '/' ? '/index.html' : identifier[0..-2] + ext)
+      parent_path = File.dirname(meta_filename)
 
       # Notify
       Nanoc3::NotificationCenter.post(:file_created, meta_filename)
-      content_filenames.each_value do |content_filename|
-        Nanoc3::NotificationCenter.post(:file_created, content_filename)
-      end
+      Nanoc3::NotificationCenter.post(:file_created, content_filename)
 
       # Create files
-      FileUtils.mkdir_p(dir_path)
+      FileUtils.mkdir_p(parent_path)
       File.open(meta_filename,    'w') { |io| io.write(YAML.dump(attributes.stringify_keys)) }
-      content_filenames.each_value do |content_filename|
-        File.open(content_filename, 'w') { |io| io.write(content) }
-      end
+      File.open(content_filename, 'w') { |io| io.write(content) }
     end
 
     # Creates instances of klass corresponding to the files in dir_name. The
@@ -161,11 +167,11 @@ module Nanoc3::DataSources
         meta_filename    = filename_for(base_filename, meta_ext)
         content_filename = filename_for(base_filename, content_ext)
 
-        # Is binary content?
+        # is binary content?
         is_binary = !!(content_filename && !@site.config[:text_extensions].include?(File.extname(content_filename)[1..-1]))
 
         # Read content and metadata
-        meta, content_or_filename = parse(content_filename, meta_filename, kind, is_binary)
+        meta, content_or_filename = parse(content_filename, meta_filename, kind, (is_binary && klass == Nanoc3::Item))
 
         # Is locale content?
         # - excluded content with locale meta IS a locale content
@@ -173,7 +179,7 @@ module Nanoc3::DataSources
         # - included content with or without locale meta IS locale content
         # - included content with locale meta set to `false` IS NOT locale
         #   content
-        is_locale = !!(meta['locale'] || (meta['locale'] != false && locale_content?(content_filename, kind)))
+        is_locale = !!(meta['locale'] || (meta['locale'] != false && locale_content?(content_filename || meta_filename, kind)))
 
         # Create one item by locale, if content don't need a localized version,
         # use default locale
@@ -182,7 +188,7 @@ module Nanoc3::DataSources
 
           # Read content and metadata (only if is localized, default is already
           # loaded)
-          meta, content_or_filename = parse(content_filename, meta_filename, kind, is_binary) if is_locale
+          meta, content_or_filename = parse(content_filename, meta_filename, kind) if is_locale
 
           # merge meta for current locale, default locale meta used by
           # default is meta don't have key
@@ -198,7 +204,11 @@ module Nanoc3::DataSources
             :content_filename => content_filename,
             :meta_filename    => meta_filename,
             :extension        => content_filename ? ext_of(content_filename)[1..-1] : nil,
-            :locale           => locale
+            :locale           => locale,
+            # WARNING :file is deprecated; please create a File object manually
+            # using the :content_filename or :meta_filename attributes.
+            # TODO [in nanoc 4.0] remove me
+            :file             => content_filename ? Nanoc3::Extra::FileProxy.new(content_filename) : nil
           }.merge(meta)
 
           # Get identifier
@@ -264,16 +274,13 @@ module Nanoc3::DataSources
         if ![ 0, 1 ].include?(meta_filenames.size)
           raise RuntimeError, "Found #{meta_filenames.size} meta files for #{key}; expected 0 or 1"
         end
-        if !( 0 .. I18n.available_locales.size ).include?(content_filenames.size)
+        if !( 0 .. (I18n.available_locales.empty? ? 1 : I18n.available_locales.size) ).include?(content_filenames.size)
           raise RuntimeError, "Found #{content_filenames.size} content files for #{key}; expected 0 to #{I18n.available_locales.size}"
         end
 
         # Check content file extensions and default file
         if fn = content_filenames.find {|fn| ext_of(fn) != ext_of(content_filenames[0]) }
           raise RuntimeError, "Found multiple content extensions for `#{basename_of(fn)}.???`"
-        end
-        if !content_filenames.find {|fn| locale_of(fn) == I18n.default_locale } && !content_filenames.find {|fn| fn == basename_of(fn) + ext_of(fn) }
-          raise RuntimeError, "Don't found default content file or default locale content file for `#{basename_of(content_filenames[0])}#{ext_of(content_filenames[0])}`"
         end
 
         # Reorder elements and convert to extnames
@@ -383,7 +390,7 @@ module Nanoc3::DataSources
     #     layout: ['*']
     #
     def locale_exclude_regex(kind)
-      Regexp.union(@locale_config[:exclude][kind.to_sym].map do |identifier|
+      Regexp.union((@locale_config[:exclude][kind.to_sym] || (I18n.available_locales.empty? ? ['*'] : [])).map do |identifier|
         if identifier.is_a? String
           # Add leading/trailing slashes if necessary
           new_identifier = identifier.dup
@@ -400,7 +407,7 @@ module Nanoc3::DataSources
     # Parses the file named `filename` and returns an array with its first
     # element a hash with the file's metadata, and with its second element the
     # file content itself.
-    def parse(content_filename, meta_filename, kind, is_binary)
+    def parse(content_filename, meta_filename, kind, is_binary=false)
       # Read content and metadata from separate files
       if meta_filename || is_binary
         meta = (meta_filename && YAML.load_file(meta_filename)) || {}
