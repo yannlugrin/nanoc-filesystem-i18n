@@ -1,12 +1,12 @@
 require 'rubygems'
 require 'rake'
-require File.dirname(__FILE__) + '/lib/nanoc3/data_sources/version'
+require File.dirname(__FILE__) + '/lib/nanoc3/data_sources/filesystem_i18n/version'
 
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = 'nanoc-filesystem-i18n'
-    gem.version = Nanoc3::DataSources::Version
+    gem.version = Nanoc3::DataSources::FilesystemI18n::Version
     gem.summary = %Q{I18n filesystem based data source for nanoc}
     gem.description = %Q{I18n filesystem based data source for nanoc. Compatible with nanoc 3 and default filesystem based data source.}
     gem.email = 'yann.lugrin@sans-savoir.net'

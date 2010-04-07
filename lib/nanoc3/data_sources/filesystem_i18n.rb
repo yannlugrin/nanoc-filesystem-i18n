@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require 'nanoc3'
 require 'i18n'
 
 module Nanoc3::DataSources
