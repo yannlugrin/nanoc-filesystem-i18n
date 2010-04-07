@@ -32,8 +32,8 @@ extension must always be `.yaml`, though.
 An item/layout content file named `foo.markdown` contain default content
 for all locales, but you can create a content file for each locales with
 e.g. a `foo.fr.markdown` for locale `fr`. If default locale for site is
-`fr`, the `foo.fr.markdow` file is the default content file and the
-`foo.markdown` file must be deleted.
+`fr` and the `foo.fr.markdow` file is present but `foo.markdow` file not,
+the `fr` content file is used by default.
 
 The identifier is calculated by stripping the extension (part after last dot)
 and locale code.

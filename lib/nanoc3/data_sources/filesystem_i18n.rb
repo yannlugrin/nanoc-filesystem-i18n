@@ -6,42 +6,11 @@ require 'i18n'
 module Nanoc3::DataSources
 
   # The filesystem_i18n data source is a localized data source for a nanoc
-  # site. It stores all data as files on the hard disk and is compatible with
-  # defaults nanoc filesystem data source.
+  # site. It stores all data as files on the hard disk and is fully compatible
+  # with {Nanoc3::DataSources::FilesystemUnified} and {Nanoc3::DataSources::FilesystemVerbose}.
   #
-  # None of the public api methods are documented in this file. See
-  # {Nanoc3::DataSource} for documentation on the overridden methods instead.
-  #
-  # The filesystem_i18n data source stores its items and layouts in nested
-  # directories or files. Each directory represents a single item or layout,
-  # but an item can be a single file a in directory.The root directory for
-  # items is the `content` directory; for layouts it is the `layouts`
-  # directory.
-  #
-  # Every directory has a content file and a meta file. The content file
-  # contains the actual item content or layout, while the meta file contains
-  # the item’s or the layout’s metadata, formatted as YAML.
-  #
-  # Both content files and meta files are named after its parent directory
-  # (i.e. item). For example, an item/layout named `foo` will have a directory
-  # named `foo`, with e.g. a `foo.markdown` or `index.markdown` content file
-  # and a `foo.yaml` or `index.yaml` meta file. An item/layout named `foo/bar`
-  # can be also created in parent directory named `foo` without dedicated
-  # directory, with e.g. a `foo.markdown` content file and `foo.yaml` meta
-  # file.
-  #
-  # Content file extensions are not used for determining the filter that
-  # should be run; the meta file defines the list of filters. The meta file
-  # extension must always be `.yaml`, though.
-  #
-  # An item/layout content file named `foo.markdown` contain default content
-  # for all locales, but you can create a content file for each locales with
-  # e.g. a `foo.fr.markdown` for locale `fr`. If default locale for site is
-  # `fr`, the `foo.fr.markdow` file is the default content file and the
-  # `foo.markdown` file must be deleted.
-  #
-  # The identifier is calculated by stripping the extension (part after last dot)
-  # and locale code.
+  # For more information about this data source specifications and configuration,
+  # please read the Readme file.
   class FilesystemI18n < Nanoc3::DataSource
     identifier :filesystem_i18n
 
