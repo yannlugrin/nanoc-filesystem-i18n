@@ -19,9 +19,8 @@ class Nanoc3::DataSources::FilesystemTest < MiniTest::Unit::TestCase
     FileUtils.rm_rf('lib/default.rb')
 
     # Mock VCS
-    # I18n: evokde `add` one more time for `locale` directory
     vcs = mock
-    vcs.expects(:add).times(4) # One time for each directory
+    vcs.expects(:add).times(3) # One time for each directory
     data_source.vcs = vcs
 
     # Recreate files

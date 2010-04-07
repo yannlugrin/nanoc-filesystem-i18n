@@ -90,7 +90,7 @@ module Nanoc3::DataSources
     # See {Nanoc3::DataSource#setup}.
     def setup
       # Create directories
-      %w( content layouts lib locale ).each do |dir|
+      %w( content layouts lib ).each do |dir|
         FileUtils.mkdir_p(dir)
         vcs.add(dir)
       end
