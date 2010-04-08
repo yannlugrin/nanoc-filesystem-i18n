@@ -6,12 +6,46 @@ with {Nanoc3::DataSources::FilesystemUnified} and {Nanoc3::DataSources::Filesyst
 
 == Resources
 
- * FilesystemI18n (http://github.com/yannlugrin/nanoc-filesystem-i18n)
- * Nanoc (http://nanoc.stoneship.org)
- * Nanoc on Github (http://github.com/ddfreyne/nanoc)
- * Ruby I18n (http://github.com/svenfuchs/i18n)
+- FilesystemI18n (http://github.com/yannlugrin/nanoc-filesystem-i18n)
+- Nanoc (http://nanoc.stoneship.org)
+- Nanoc on Github (http://github.com/ddfreyne/nanoc)
+- Ruby I18n (http://github.com/svenfuchs/i18n)
 
 == Documentation
+
+=== Installation
+
+ gem install nanoc-filesystem-i18n --pre
+
+Add following require in your `lib/default.rb` file:
+
+  require 'nanoc3/data_sources/filesystem_i18n'
+
+Edit `config.yaml` file of your nanoc site and change data_sources type
+from `filesystem_unified` or `filesystem_verbose` to `filesystem_i18n`:
+
+  data_sources:
+    -
+      type: filesystem_i18n
+
+In the data source section of `config.yaml` file, add following information:
+
+      config:
+        locale:
+          # list of availables locale, ser default to true to select default
+          # locale.
+          availables:
+            fr:
+              name: Francais
+            en:
+              name: English
+              default: true
+          # objects should be not localized
+          exclude:
+            item: ['/css*', '/js*']
+            layout: ['*']
+
+See following configuration section for more information.
 
 === Data source specifications
 
@@ -49,6 +83,10 @@ The identifier is calculated by stripping the extension (part after last dot)
 and locale code.
 
 === Configuration
+
+soon...
+
+=== Manage locale meta and content
 
 soon...
 
