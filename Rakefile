@@ -16,7 +16,7 @@ begin
     gem.add_dependency 'i18n', '>= 0'
     gem.add_development_dependency 'minitest', '>= 0'
     gem.add_development_dependency 'yard', '>= 0'
-    gem.files.exclude '.gitignore', '.document'
+    gem.files.exclude '.gitignore', '.document', 'nanoc-filesystem-i18n.gemspec'
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
