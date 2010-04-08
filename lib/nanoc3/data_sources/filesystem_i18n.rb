@@ -9,6 +9,9 @@ module Nanoc3::DataSources
   # site. It stores all data as files on the hard disk and is fully compatible
   # with {Nanoc3::DataSources::FilesystemUnified} and {Nanoc3::DataSources::FilesystemVerbose}.
   #
+  # None of the public api methods are documented in this file. See
+  # {Nanoc3::DataSource} for documentation on the overridden methods instead.
+  #
   # For more information about this data source specifications and configuration,
   # please read the Readme file.
   class FilesystemI18n < Nanoc3::DataSource
