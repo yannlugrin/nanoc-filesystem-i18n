@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require 'nanoc3'
-require 'i18n'
+require 'nanoc3/extra/i18n'
 
 module Nanoc3::DataSources
 
@@ -26,34 +26,11 @@ module Nanoc3::DataSources
 
     # See {Nanoc3::DataSource#up}.
     def up
-      if !@locale_config
-        # Default empty config for nanoc filesystem data source compatibility,
-        # by default locale system is disable and all content is not localized
-        @config                       ||= {}
-        @config[:locale]              ||= {}
-        @config[:locale][:availables] ||= {}
-        @config[:locale][:exclude]    ||= {}
-
-        # Exclude all item if no locale is available
-        @config[:locale][:exclude][:layout] ||= @config[:locale][:availables].empty? ? ['*'] : []
-        @config[:locale][:exclude][:item]   ||= @config[:locale][:availables].empty? ? ['*'] : []
-
-        # Load locale config
-        @locale_config = @config[:locale].symbolize_keys
-
-        # Configure I18n module with default value callback
-        if !@config[:locale][:availables].empty?
-          I18n.default_locale = begin @locale_config[:availables].find{|code, data| data[:default] }[0] rescue @config[:locale][:availables].first[0]  end
-        else
-          I18n.default_locale = nil
-        end
-        I18n.available_locales = @locale_config[:availables].empty? ? [] : @locale_config[:availables].map {|code, data| code.to_sym }
-      end
+      I18n.load_config(@config ? @config[:locale] : nil)
     end
 
     # See {Nanoc3::DataSource#down}.
     def down
-      @locale_config = nil
     end
 
     # See {Nanoc3::DataSource#setup}.
@@ -157,7 +134,7 @@ module Nanoc3::DataSources
 
           # Read content and metadata (only if is localized, default is already
           # loaded)
-          meta, content_or_filename = parse(content_filename, meta_filename, kind) if is_locale
+          meta, content_or_filename = parse(content_filename, meta_filename, kind, (is_binary && klass == Nanoc3::Item)) if is_locale
 
           # merge meta for current locale, default locale meta used by
           # default is meta don't have key
@@ -359,7 +336,7 @@ module Nanoc3::DataSources
     #     layout: ['*']
     #
     def locale_exclude_regex(kind)
-      Regexp.union((@locale_config[:exclude][kind.to_sym] || (I18n.available_locales.empty? ? ['*'] : [])).map do |identifier|
+      Regexp.union(I18n.exclude_list(kind.to_sym).map do |identifier|
         if identifier.is_a? String
           # Add leading/trailing slashes if necessary
           new_identifier = identifier.dup
