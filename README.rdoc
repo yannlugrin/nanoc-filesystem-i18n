@@ -1,15 +1,24 @@
 = nanoc-filesystem-i18n
 
-The filesystem_i18n data source is a localized data source for a nanoc
-site. It stores all data as files on the hard disk and is fully compatible
-with {Nanoc3::DataSources::FilesystemUnified} and {Nanoc3::DataSources::FilesystemVerbose}.
+filesystem_i18n is a localized data source for a nanoc site. It stores
+all data as files on the hard disk and is fully compatible with default
+nanoc data sources {Nanoc3::DataSources::FilesystemUnified} and
+{Nanoc3::DataSources::FilesystemVerbose}.
+
+Nanoc is a Ruby web publishing system for building small to medium-sized
+websites. Is a tool that runs on your local computer and compiles documents
+written in formats such as Markdown, Textile, Haml, Erb, ... into a static
+web site consisting of simple HTML files, ready for uploading to any web
+server. For more information, please see Nanoc site.
 
 == Resources
 
 - FilesystemI18n (http://github.com/yannlugrin/nanoc-filesystem-i18n)
 - Nanoc (http://nanoc.stoneship.org)
 - Nanoc on Github (http://github.com/ddfreyne/nanoc)
-- Ruby I18n (http://github.com/svenfuchs/i18n)
+- Nanoc discussion group (http://groups.google.com/group/nanoc)
+- Nanoc irc channel (irc://chat.freenode.net/#nanoc)
+- Ruby I18n on Github (http://github.com/svenfuchs/i18n)
 
 == Documentation
 
@@ -19,7 +28,7 @@ with {Nanoc3::DataSources::FilesystemUnified} and {Nanoc3::DataSources::Filesyst
 
 Add following require in your `lib/default.rb` file:
 
-  require 'nanoc3/data_sources/filesystem_i18n'
+ require 'nanoc3/data_sources/filesystem_i18n'
 
 Edit `config.yaml` file of your nanoc site and change data_sources type
 from `filesystem_unified` or `filesystem_verbose` to `filesystem_i18n`:
@@ -28,7 +37,7 @@ from `filesystem_unified` or `filesystem_verbose` to `filesystem_i18n`:
     -
       type: filesystem_i18n
 
-In the data source section of `config.yaml` file, add following information:
+In the data source section of `config.yaml` file, add following informations:
 
       config:
         locale:
@@ -90,9 +99,39 @@ soon...
 
 soon...
 
-=== Deployement
+=== Locale selection according to navigator accept language
 
-soon...
+If you deploy your site with Apache server, you can use mod_rewrite to select
+default locale according to navigator accept language configuration. Create an
+item named `htaccess.erb` in `content` directory with following content:
+
+ RewriteEngine On
+ RewriteBase /
+
+ RewriteCond %{HTTP:Accept-Language} ^.*?(<%= I18n.available_locales.map{|l| l.to_s }.join('|') %>).*$ [NC]
+ RewriteRule ^(.*)$ - [env=locale:%1,S=1]
+ RewriteRule ^(.*)$ - [env=locale:<%= I18n.default_locale.to_s %>]
+
+ RewriteCond %{REQUEST_FILENAME} !-d
+ RewriteCond %{REQUEST_FILENAME} !-f
+ RewriteCond %{REQUEST_FILENAME} !-l
+ RewriteRule ^(.*)$ %{ENV:locale}/$1 [R=303,L]
+
+Add in `Rules` file following compile and route information:
+
+ compile '/htaccess*' do
+   filter :erb
+   # don’t layout
+ end
+
+ route '/htaccess*' do
+   '/.htaccess'
+ end
+
+With this method, visitor on root of your site is redirected to is/her prefered
+language or default language.
+
+Another methods comming soon.
 
 == Note on Patches/Pull Requests
 
