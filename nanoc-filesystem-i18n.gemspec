@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{nanoc-filesystem-i18n}
-  s.version = "0.1.0.pre1"
+  s.version = "0.1.0.pre2"
 
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Yann Lugrin"]
-  s.date = %q{2010-04-08}
+  s.date = %q{2010-04-09}
   s.description = %q{I18n filesystem based data source for nanoc. Compatible with nanoc 3 and default filesystem based data source.}
   s.email = %q{yann.lugrin@sans-savoir.net}
   s.extra_rdoc_files = [
