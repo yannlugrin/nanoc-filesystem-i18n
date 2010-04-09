@@ -6,7 +6,7 @@ nanoc data sources {Nanoc3::DataSources::FilesystemUnified} and
 {Nanoc3::DataSources::FilesystemVerbose}.
 
 Nanoc is a Ruby web publishing system for building small to medium-sized
-websites. Is a tool that runs on your local computer and compiles documents
+websites. It is a tool that runs on your local computer and compiles documents
 written in formats such as Markdown, Textile, Haml, Erb, ... into a static
 web site consisting of simple HTML files, ready for uploading to any web
 server. For more information, please see Nanoc site.
@@ -66,7 +66,7 @@ directory.
 
 Every object (item or layout) is represented by a meta file and one or
 more content files with a minimum of one file. The content file contains
-he actual item content or layout, while the meta file contains the item’s
+the actual item content or layout, while the meta file contains the item’s
 or the layout’s metadata, formatted as YAML.
 
 Both meta files and content files are named after its parent directory
