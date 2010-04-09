@@ -44,14 +44,14 @@ In the data source section of `config.yaml` file, add following informations:
           # list of availables locale, ser default to true to select default
           # locale.
           availables:
-            fr:
-              name: Francais
             en:
-              name: English
+              name: "English"
               default: true
+            fr:
+              name: "Francais"
           # objects should be not localized
           exclude:
-            item: ['/css*', '/js*']
+            item: ['/css*', '/js*', '/images*']
             layout: ['*']
 
 See following configuration section for more information.
@@ -88,12 +88,37 @@ e.g. a `foo.fr.markdown` for locale `fr`. If default locale for site is
 `fr` and the `foo.fr.markdown` file is present but `foo.markdow` file not,
 the `fr` content file is used by default.
 
-The identifier is calculated by stripping the extension (part after last dot)
-and locale code.
+The identifier is calculated by stripping the extension (part after last
+dot) and locale code.
 
 === Configuration
 
-soon...
+You need to configure available locales in config data source section of
+`config.yaml` file. The I18n configuration is a hash with `locale` key,
+and have a `availables` section containing each locale information. If
+`availables` is set to nil, empty hash or false, the site is not localized
+and data source work normaly. A locale have it code has key and contain a
+`name` key and optional `default` key. Set only one locale has default.
+
+ config:
+   locale:
+     availables:
+       en:
+         name: "English"
+         default: true
+       fr:
+         name: "Francais"
+
+Items and layout can be excluded from localize process by set `exclude`
+list. It is recommanded to exclude all layouts, css, javascript and
+design images.
+
+ config:
+   locale:
+     ...
+     exclude:
+       item: ['/css*', '/js*', '/images*']
+       layout: ['*']
 
 === Manage locale meta and content
 
@@ -104,6 +129,10 @@ soon...
 If you deploy your site with Apache server, you can use mod_rewrite to select
 default locale according to navigator accept language configuration. Create an
 item named `htaccess.erb` in `content` directory with following content:
+
+ ---
+ locale: false
+ ---
 
  RewriteEngine On
  RewriteBase /
