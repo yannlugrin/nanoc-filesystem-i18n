@@ -29,11 +29,12 @@ module Nanoc3::DataSources
 
     # See {Nanoc3::DataSource#up}.
     def up
-      I18n.load_config(@config ? @config[:locale] : nil)
+      load_config(@config)
     end
 
     # See {Nanoc3::DataSource#down}.
     def down
+      @config_loaded = false
     end
 
     # See {Nanoc3::DataSource#setup}.
@@ -66,6 +67,28 @@ module Nanoc3::DataSources
     end
 
   private
+
+    # Load data source configuration and configure I18n
+    def load_config(config)
+      unless @config_loaded
+        config = config.symbolize_keys if config
+        @exclude_objects = {}
+
+        if config && config[:locale]
+          I18n.available_locales = config[:locale][:availables] ? config[:locale][:availables].map {|code, data| code.to_sym } : []
+          if I18n.localized_site?
+            I18n.default_locale = I18n.available_locales.find{|code, data| data[:default] }[0] rescue I18n.available_locales.first
+            @exclude_objects = config[:locale][:exclude] if config[:locale][:exclude]
+          end
+        end
+
+        # By default, exclude object Hash return empty array, or if site
+        # is not localized (no available locale), all objects is excluded.
+        @exclude_objects.default = I18n.localized_site? ? [] : ['*']
+      end
+
+      @config_loaded = true
+    end
 
     # Creates a new object (item or layout) on disk in dir_name according to
     # the given identifier. The file will have its attributes taken from the
@@ -339,7 +362,7 @@ module Nanoc3::DataSources
     #     layout: ['*']
     #
     def locale_exclude_regex(kind)
-      Regexp.union(I18n.exclude_list(kind.to_sym).map do |identifier|
+      Regexp.union(@exclude_objects[kind.to_sym].map do |identifier|
         if identifier.is_a? String
           # Add leading/trailing slashes if necessary
           new_identifier = identifier.dup
