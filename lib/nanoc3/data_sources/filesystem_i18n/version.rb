@@ -5,7 +5,7 @@ require 'nanoc3'
 module Nanoc3
   module DataSources
     class FilesystemI18n < Nanoc3::DataSource
-      Version = '0.1.0.pre3'
+      Version = '0.1.0.pre4'
     end
   end
 end
