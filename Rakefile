@@ -1,50 +1,21 @@
-require 'rubygems'
-require 'rake'
-require File.dirname(__FILE__) + '/lib/nanoc3/data_sources/filesystem_i18n/version'
+require 'bundler'
+Bundler::GemHelper.install_tasks
 
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = 'nanoc-filesystem-i18n'
-    gem.version = Nanoc3::DataSources::FilesystemI18n::Version
-    gem.summary = %Q{I18n filesystem based data source for nanoc}
-    gem.description = %Q{I18n filesystem based data source for nanoc. Compatible with nanoc 3 and default filesystem based data source.}
-    gem.email = 'yann.lugrin@sans-savoir.net'
-    gem.homepage = 'http://github.com/yannlugrin/nanoc-filesystem-i18n'
-    gem.authors = ['Yann Lugrin']
-    gem.add_dependency 'nanoc', '>= 3.1.2'
-    gem.add_dependency 'i18n', '>= 0'
-    gem.add_development_dependency 'minitest', '>= 0'
-    gem.add_development_dependency 'yard', '>= 0'
-    gem.files.exclude '.gitignore', '.document', 'nanoc-filesystem-i18n.gemspec'
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
-  end
-  Jeweler::GemcutterTasks.new
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
+require 'nanoc3'
+
+require 'minitest/unit'
+
+desc 'Run all tests'
+task :test do
+  ENV['QUIET'] ||= 'true'
+
+  $LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__) + '/test'))
+
+  MiniTest::Unit.autorun
+
+  test_files = Dir['test/**/*_spec.rb'] + Dir['test/**/test_*.rb']
+  test_files.each { |f| require f }
 end
-
-require 'rake/testtask'
-Rake::TestTask.new(:test) do |test|
-  test.libs << 'lib' << 'test'
-  test.pattern = 'test/**/test_*.rb'
-  test.verbose = true
-end
-
-begin
-  require 'rcov/rcovtask'
-  Rcov::RcovTask.new do |test|
-    test.libs << 'test'
-    test.pattern = 'test/**/test_*.rb'
-    test.verbose = true
-  end
-rescue LoadError
-  task :rcov do
-    abort "RCov is not available. In order to run rcov, you must: sudo gem install spicycode-rcov"
-  end
-end
-
-task :test => :check_dependencies
 
 task :default => :test
 

@@ -1,0 +1,24 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    cri (1.0.1)
+    i18n (0.4.1)
+    minitest (1.7.2)
+    mocha (0.9.8)
+      rake
+    nanoc (3.1.5)
+      nanoc3 (>= 3.1.5)
+    nanoc3 (3.1.5)
+      cri (>= 1.0.0)
+    rake (0.8.7)
+    yard (0.6.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  i18n
+  minitest
+  mocha
+  nanoc (>= 3.1.2)
+  yard
