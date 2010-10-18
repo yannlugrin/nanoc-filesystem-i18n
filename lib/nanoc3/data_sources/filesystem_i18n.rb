@@ -158,13 +158,17 @@ module Nanoc3::DataSources
         (is_locale ? I18n.available_locales : [I18n.default_locale]).map do |locale|
           I18n.locale = locale # Set current locale
 
-          # Read content and metadata (only if is localized, default is already
-          # loaded)
-          meta, content_or_filename = parse(content_filename, meta_filename, kind, (is_binary && klass == Nanoc3::Item)) if is_locale
-
-          # merge meta for current locale, default locale meta used by
-          # default is meta don't have key
+          # Process for localized files
           if is_locale
+            # Get filenames for localized content
+            meta_filename    = filename_for(base_filename, meta_ext)
+            content_filename = filename_for(base_filename, content_ext)
+
+            # Read content and metadata for localized content
+            meta, content_or_filename = parse(content_filename, meta_filename, kind, (is_binary && klass == Nanoc3::Item))
+
+            # merge meta for current locale, default locale meta used by
+            # default is meta don't have key
             meta_locale = meta.delete('locale') {|el| Hash.new }
             meta = (meta_locale[I18n.default_locale] || Hash.new).merge(meta)
             meta.merge!(meta_locale[locale.to_s] || Hash.new)
