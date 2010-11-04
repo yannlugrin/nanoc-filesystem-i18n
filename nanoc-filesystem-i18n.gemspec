@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{nanoc-filesystem-i18n}
-  s.version = "0.1.0.pre4"
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Yann Lugrin"]
