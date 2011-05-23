@@ -1,4 +1,6 @@
-require 'helper'
+# encoding: utf-8
+
+require './test/helper'
 
 class TestNanocFilesystemI18n < MiniTest::Unit::TestCase
 
