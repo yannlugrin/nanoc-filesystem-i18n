@@ -88,14 +88,14 @@ class Nanoc3::DataSources::FilesystemVerboseTest < MiniTest::Unit::TestCase
 
     # Check
     assert_equal 2, items.size
-    assert_equal '/foo/',                        items[0].identifier
-    assert_equal 'Foo',                          items[0][:title]
-    assert_equal 'content/foo/foo.css',          items[0][:content_filename]
-    assert_equal 'content/foo/foo.yaml',         items[0][:meta_filename]
-    assert_equal '/foo.bar/',                    items[1].identifier
-    assert_equal 'Foo Bar',                      items[1][:title]
-    assert_equal 'content/foo.bar/foo.bar.css',  items[1][:content_filename]
-    assert_equal 'content/foo.bar/foo.bar.yaml', items[1][:meta_filename]
+    assert_equal '/foo.bar/',                    items[0].identifier
+    assert_equal 'Foo Bar',                      items[0][:title]
+    assert_equal 'content/foo.bar/foo.bar.css',  items[0][:content_filename]
+    assert_equal 'content/foo.bar/foo.bar.yaml', items[0][:meta_filename]
+    assert_equal '/foo/',                        items[1].identifier
+    assert_equal 'Foo',                          items[1][:title]
+    assert_equal 'content/foo/foo.css',          items[1][:content_filename]
+    assert_equal 'content/foo/foo.yaml',         items[1][:meta_filename]
   end
 
   def test_items_with_optional_meta_file
