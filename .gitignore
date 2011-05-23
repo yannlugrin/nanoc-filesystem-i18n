@@ -21,5 +21,6 @@ pkg
 .rvmrc
 
 ## PROJECT::SPECIFIC
+Gemfile.lock
 .yardoc
 doc
