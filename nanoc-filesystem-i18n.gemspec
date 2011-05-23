@@ -4,7 +4,7 @@ require 'nanoc3/data_sources/filesystem_i18n/version'
 
 Gem::Specification.new do |s|
   s.name        = 'nanoc-filesystem-i18n'
-  s.version     = Nanoc3::DataSources::FilesystemI18n::VERSION
+  s.version     = Nanoc3::DataSources::FilesystemI18nVersion
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Yann Lugrin']
   s.email       = ['yann.lugrin@sans-savoir.net']
