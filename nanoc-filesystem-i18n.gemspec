@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project         = 'nanoc-filesystem-i18n'
 
   s.add_dependency 'nanoc', '>= 3.1.2'
+  s.add_dependency 'i18n',  '>= 0.4.1'
 
   s.add_development_dependency 'minitest',  '>= 1.7.2'
   s.add_development_dependency 'mocha',     '>= 0.9.8'
