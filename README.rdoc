@@ -130,21 +130,33 @@ If you deploy your site with Apache server, you can use mod_rewrite to select
 default locale according to navigator accept language configuration. Create an
 item named `htaccess.erb` in `content` directory with following content:
 
- ---
- locale: false
- ---
+---
+locale: false
+---
+
+# For language content negociation, used by css images
+ Options +MultiViews
 
  RewriteEngine On
  RewriteBase /
 
+ # Set prefered language from browser preference if available or to default locale
  RewriteCond %{HTTP:Accept-Language} ^.*?(<%= I18n.available_locales.map{|l| l.to_s }.join('|') %>).*$ [NC]
- RewriteRule ^(.*)$ - [env=locale:%1,S=1]
- RewriteRule ^(.*)$ - [env=locale:<%= I18n.default_locale.to_s %>]
+ RewriteRule ^(.*)$ - [env=prefer-language:%1,S=1]
+ RewriteRule ^(.*)$ - [env=prefer-language:<%= I18n.default_locale.to_s %>]
 
+ # Force prefered language if present in URI
+ SetEnvIf REQUEST_URI ^/(<%= I18n.available_locales.map{|l| l.to_s }.join('|') %>)(/.+)? prefer-language=$1
+
+ # Rewrite root access to prefered language root
+ RewriteRule ^(/)?$ %{ENV:prefer-language}/ [R=303,L]
+
+ # Rewrite other uri to language scope
  RewriteCond %{REQUEST_FILENAME} !-d
  RewriteCond %{REQUEST_FILENAME} !-f
  RewriteCond %{REQUEST_FILENAME} !-l
- RewriteRule ^(.*)$ %{ENV:locale}/$1 [R=303,L]
+ RewriteCond %{REQUEST_URI} !^/(<%= I18n.available_locales.map{|l| l.to_s }.join('|') %>)
+ RewriteRule ^(.*)$ %{ENV:prefer-language}/$1 [R=303,L]
 
 Add in `Rules` file following compile and route information:
 
@@ -159,8 +171,6 @@ Add in `Rules` file following compile and route information:
 
 With this method, visitor on root of your site is redirected to is/her prefered
 language or default language.
-
-Another methods comming soon.
 
 == Note on Patches/Pull Requests
 
