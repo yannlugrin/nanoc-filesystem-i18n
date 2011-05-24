@@ -24,11 +24,15 @@ server. For more information, please see Nanoc site.
 
 === Installation
 
- gem install nanoc-filesystem-i18n --pre
+ gem install nanoc-filesystem-i18n
 
-Add following require in your `lib/default.rb` file:
+And add following require in your `lib/default.rb` file:
 
  require 'nanoc3/data_sources/filesystem_i18n'
+
+Or add following line in your `Gemfile` file:
+
+ gem 'nanoc-filesystem-i18n', :require => 'nanoc3/data_sources/filesystem_i18n'
 
 Edit `config.yaml` file of your nanoc site and change data_sources type
 from `filesystem_unified` or `filesystem_verbose` to `filesystem_i18n`:
@@ -89,7 +93,16 @@ e.g. a `foo.fr.markdown` for locale `fr`. If default locale for site is
 the `fr` content file is used by default.
 
 The identifier is calculated by stripping the extension (part after last
-dot) and locale code.
+dot) and locale code. The locale code also be added at start of identifier
+(`foo.fr.html` => `/fr/foo/`), remember this when you configure `Rules` file.
+
+Top level key in meta file is default for all locales, but you can override a
+metadata for specific locale with following method:
+
+ title: Default Item Title
+ locale:
+   fr:
+     title: Titre en Français
 
 === Configuration
 
@@ -122,7 +135,35 @@ design images.
 
 === Manage locale meta and content
 
-soon...
+All items have an attribute `locale` now, with the item locale code. Get
+current locale code in your templates and helpers with `item[:locale]`.
+
+=== Rules file
+
+In your `Rules` file, you must remember that identifier have locale code at
+the beginning.
+
+ compile '/*/foo/' do
+   filter :erb
+   layout 'default'
+ end
+
+ compile '*' do
+   filter :erb
+   layout 'default'
+ end
+
+ route '/*/foo/' do
+   item.identifier.gsub(/\/$/, '') + '.' + item[:extension]
+ end
+
+ route '*' do
+   if item.children.size > 0 || item.identifier == '/' || item.identifier == "/#{item[:locale]}/"
+     item.identifier + 'index.html'
+   else
+     item.identifier.gsub(/\/$/, '') + '.' + item[:extension]
+   end
+ end
 
 === Locale selection according to navigator accept language
 
