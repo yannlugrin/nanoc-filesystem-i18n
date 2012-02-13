@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'nanoc3'
+require 'nanoc'
 require 'i18n'
 
 module I18n

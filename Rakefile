@@ -1,7 +1,7 @@
 require 'bundler'
 Bundler::GemHelper.install_tasks
 
-require 'nanoc3'
+require 'nanoc'
 
 require 'minitest/unit'
 
@@ -18,7 +18,7 @@ end
 task :default => :test
 
 begin
-  require 'nanoc3'
+  require 'nanoc'
   require 'yard'
   YARD::Rake::YardocTask.new
 rescue LoadError
