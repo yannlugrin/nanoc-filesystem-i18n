@@ -1,7 +1,12 @@
 require 'bundler'
 Bundler::GemHelper.install_tasks
 
-require 'nanoc'
+begin
+  require 'nanoc'
+rescue LoadError # fallback to nanoc3 namespace
+  require 'nanoc3'
+  Nanoc = Nanoc3
+end
 
 require 'minitest/unit'
 

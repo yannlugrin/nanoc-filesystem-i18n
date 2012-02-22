@@ -1,6 +1,11 @@
 # encoding: utf-8
 
-require 'nanoc'
+begin
+  require 'nanoc'
+rescue LoadError # fallback to nanoc3 namespace
+  require 'nanoc3'
+  Nanoc = Nanoc3
+end
 require 'nanoc/extra/i18n'
 
 module Nanoc::DataSources
