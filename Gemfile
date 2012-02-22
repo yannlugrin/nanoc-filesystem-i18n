@@ -1,10 +1,9 @@
-# A sample Gemfile
-source "http://rubygems.org"
+source 'http://rubygems.org'
 
-gem 'nanoc', '>= 3.1.2'
-gem 'i18n', '>= 0'
+# Specify your gem's dependencies in guard-minitest.gemspec
+gemspec
 
-gem 'yard', '>= 0'
-
-gem 'minitest'
-gem 'mocha'
+# Other development dependancies
+gem 'rake'
+gem 'guard'
+gem 'guard-minitest', '>= 0.4.0.rc2'

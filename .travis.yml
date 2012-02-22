@@ -1,0 +1,15 @@
+language: ruby
+branches:
+  only:
+    - master
+rvm:
+  - 1.8.7
+  - 1.9.2
+gemfile:
+  # - gemfiles/nanac-3.1
+  - gemfiles/nanac-3.2
+  - gemfiles/nanoc-3.3
+notifications:
+  recipients:
+    - yann.lugrin@sans-savoir.net
+

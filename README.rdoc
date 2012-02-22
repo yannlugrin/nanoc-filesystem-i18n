@@ -1,9 +1,11 @@
 = nanoc-filesystem-i18n
 
+{<img src="https://secure.travis-ci.org/yannlugrin/nanoc-filesystem-i18n.png" />}[http://travis-ci.org/yannlugrin/nanoc-filesystem-i18n]
+
 filesystem_i18n is a localized data source for a nanoc site. It stores
 all data as files on the hard disk and is fully compatible with default
-nanoc data sources {Nanoc3::DataSources::FilesystemUnified} and
-{Nanoc3::DataSources::FilesystemVerbose}.
+nanoc data sources {Nanoc::DataSources::FilesystemUnified} and
+{Nanoc::DataSources::FilesystemVerbose}.
 
 Nanoc is a Ruby web publishing system for building small to medium-sized
 websites. It is a tool that runs on your local computer and compiles documents
@@ -24,11 +26,15 @@ server. For more information, please see Nanoc site.
 
 === Installation
 
- gem install nanoc-filesystem-i18n --pre
+ gem install nanoc-filesystem-i18n
 
-Add following require in your `lib/default.rb` file:
+And add following require in your `lib/default.rb` file:
 
- require 'nanoc3/data_sources/filesystem_i18n'
+ require 'nanoc/data_sources/filesystem_i18n'
+
+Or add following line in your `Gemfile` file:
+
+ gem 'nanoc-filesystem-i18n', :require => 'nanoc/data_sources/filesystem_i18n'
 
 Edit `config.yaml` file of your nanoc site and change data_sources type
 from `filesystem_unified` or `filesystem_verbose` to `filesystem_i18n`:
@@ -89,7 +95,16 @@ e.g. a `foo.fr.markdown` for locale `fr`. If default locale for site is
 the `fr` content file is used by default.
 
 The identifier is calculated by stripping the extension (part after last
-dot) and locale code.
+dot) and locale code. The locale code also be added at start of identifier
+(`foo.fr.html` => `/fr/foo/`), remember this when you configure `Rules` file.
+
+Top level key in meta file is default for all locales, but you can override a
+metadata for specific locale with following method:
+
+ title: Default Item Title
+ locale:
+   fr:
+     title: Titre en Français
 
 === Configuration
 
@@ -122,7 +137,35 @@ design images.
 
 === Manage locale meta and content
 
-soon...
+All items have an attribute `locale` now, with the item locale code. Get
+current locale code in your templates and helpers with `item[:locale]`.
+
+=== Rules file
+
+In your `Rules` file, you must remember that identifier have locale code at
+the beginning.
+
+ compile '/*/foo/' do
+   filter :erb
+   layout 'default'
+ end
+
+ compile '*' do
+   filter :erb
+   layout 'default'
+ end
+
+ route '/*/foo/' do
+   item.identifier.gsub(/\/$/, '') + '.' + item[:extension]
+ end
+
+ route '*' do
+   if item.children.size > 0 || item.identifier == '/' || item.identifier == "/#{item[:locale]}/"
+     item.identifier + 'index.html'
+   else
+     item.identifier.gsub(/\/$/, '') + '.' + item[:extension]
+   end
+ end
 
 === Locale selection according to navigator accept language
 
@@ -130,21 +173,33 @@ If you deploy your site with Apache server, you can use mod_rewrite to select
 default locale according to navigator accept language configuration. Create an
 item named `htaccess.erb` in `content` directory with following content:
 
- ---
- locale: false
- ---
+---
+locale: false
+---
+
+# For language content negociation, used by css images
+ Options +MultiViews
 
  RewriteEngine On
  RewriteBase /
 
+ # Set prefered language from browser preference if available or to default locale
  RewriteCond %{HTTP:Accept-Language} ^.*?(<%= I18n.available_locales.map{|l| l.to_s }.join('|') %>).*$ [NC]
- RewriteRule ^(.*)$ - [env=locale:%1,S=1]
- RewriteRule ^(.*)$ - [env=locale:<%= I18n.default_locale.to_s %>]
+ RewriteRule ^(.*)$ - [env=prefer-language:%1,S=1]
+ RewriteRule ^(.*)$ - [env=prefer-language:<%= I18n.default_locale.to_s %>]
 
+ # Force prefered language if present in URI
+ SetEnvIf REQUEST_URI ^/(<%= I18n.available_locales.map{|l| l.to_s }.join('|') %>)(/.+)? prefer-language=$1
+
+ # Rewrite root access to prefered language root
+ RewriteRule ^(/)?$ %{ENV:prefer-language}/ [R=303,L]
+
+ # Rewrite other uri to language scope
  RewriteCond %{REQUEST_FILENAME} !-d
  RewriteCond %{REQUEST_FILENAME} !-f
  RewriteCond %{REQUEST_FILENAME} !-l
- RewriteRule ^(.*)$ %{ENV:locale}/$1 [R=303,L]
+ RewriteCond %{REQUEST_URI} !^/(<%= I18n.available_locales.map{|l| l.to_s }.join('|') %>)
+ RewriteRule ^(.*)$ %{ENV:prefer-language}/$1 [R=303,L]
 
 Add in `Rules` file following compile and route information:
 
@@ -159,8 +214,6 @@ Add in `Rules` file following compile and route information:
 
 With this method, visitor on root of your site is redirected to is/her prefered
 language or default language.
-
-Another methods comming soon.
 
 == Note on Patches/Pull Requests
 

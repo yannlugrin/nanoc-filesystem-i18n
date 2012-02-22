@@ -1,18 +1,18 @@
 # encoding: utf-8
 
-require 'test/helper'
+require './test/helper'
 
-class Nanoc3::DataSources::FilesystemVerboseTest < MiniTest::Unit::TestCase
+class Nanoc::DataSources::FilesystemVerboseTest < MiniTest::Unit::TestCase
 
-  include Nanoc3::TestHelpers
+  include Nanoc::TestHelpers
 
   def new_data_source(params=nil)
     # Mock site
-    site = Nanoc3::Site.new({})
+    site = Nanoc::Site.new({})
 
     # Create data source
     # I18n: call `up` to setup locale config
-    data_source = Nanoc3::DataSources::FilesystemI18n.new(site, nil, nil, params)
+    data_source = Nanoc::DataSources::FilesystemI18n.new(site, nil, nil, params)
     data_source.up
 
     # Done
@@ -84,18 +84,18 @@ class Nanoc3::DataSources::FilesystemVerboseTest < MiniTest::Unit::TestCase
     end
 
     # Load
-    items = data_source.items
+    items = data_source.items.sort {|a, b| a.identifier <=> b.identifier }
 
     # Check
     assert_equal 2, items.size
-    assert_equal '/foo/',                        items[0].identifier
-    assert_equal 'Foo',                          items[0][:title]
-    assert_equal 'content/foo/foo.css',          items[0][:content_filename]
-    assert_equal 'content/foo/foo.yaml',         items[0][:meta_filename]
-    assert_equal '/foo.bar/',                    items[1].identifier
-    assert_equal 'Foo Bar',                      items[1][:title]
-    assert_equal 'content/foo.bar/foo.bar.css',  items[1][:content_filename]
-    assert_equal 'content/foo.bar/foo.bar.yaml', items[1][:meta_filename]
+    assert_equal '/foo.bar/',                    items[0].identifier
+    assert_equal 'Foo Bar',                      items[0][:title]
+    assert_equal 'content/foo.bar/foo.bar.css',  items[0][:content_filename]
+    assert_equal 'content/foo.bar/foo.bar.yaml', items[0][:meta_filename]
+    assert_equal '/foo/',                        items[1].identifier
+    assert_equal 'Foo',                          items[1][:title]
+    assert_equal 'content/foo/foo.css',          items[1][:content_filename]
+    assert_equal 'content/foo/foo.yaml',         items[1][:meta_filename]
   end
 
   def test_items_with_optional_meta_file
@@ -232,7 +232,7 @@ class Nanoc3::DataSources::FilesystemVerboseTest < MiniTest::Unit::TestCase
     File.open('foo/stuff.dat', 'w') { |io| io.write("random binary data") }
 
     # Load
-    items = data_source.send(:load_objects, 'foo', 'item', Nanoc3::Item)
+    items = data_source.send(:load_objects, 'foo', 'item', Nanoc::Item)
 
     # Check
     assert_equal 1, items.size

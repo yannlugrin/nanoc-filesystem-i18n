@@ -13,15 +13,22 @@ end
 
 # Load nanoc
 $LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__) + '/../lib'))
-require 'nanoc3'
-require 'nanoc3/cli'
-require 'nanoc3/tasks'
-require 'nanoc3/data_sources/filesystem_i18n'
+begin
+  require 'nanoc'
+  require 'nanoc/cli'
+  require 'nanoc/tasks'
+rescue LoadError # fallback to nanoc3 namespace
+  require 'nanoc3'
+  require 'nanoc3/cli'
+  require 'nanoc3/tasks'
+  Nanoc = Nanoc3
+end
+ require 'nanoc/data_sources/filesystem_i18n'
 
 # Load miscellaneous requirements
 require 'stringio'
 
-module Nanoc3::TestHelpers
+module Nanoc::TestHelpers
 
   def if_have(*libs)
     libs.each do |lib|

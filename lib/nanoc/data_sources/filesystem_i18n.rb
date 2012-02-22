@@ -1,43 +1,48 @@
 # encoding: utf-8
 
-require 'nanoc3'
-require 'nanoc3/extra/i18n'
+begin
+  require 'nanoc'
+rescue LoadError # fallback to nanoc3 namespace
+  require 'nanoc3'
+  Nanoc = Nanoc3
+end
+require 'nanoc/extra/i18n'
 
-module Nanoc3::DataSources
+module Nanoc::DataSources
 
   # The filesystem_i18n data source is a localized data source for a nanoc
   # site. It stores all data as files on the hard disk and is fully compatible
-  # with {Nanoc3::DataSources::FilesystemUnified} and {Nanoc3::DataSources::FilesystemVerbose}.
+  # with {Nanoc::DataSources::FilesystemUnified} and {Nanoc::DataSources::FilesystemVerbose}.
   #
   # None of the public api methods are documented in this file. See
-  # {Nanoc3::DataSource} for documentation on the overridden methods instead.
+  # {Nanoc::DataSource} for documentation on the overridden methods instead.
   #
   # For more information about this data source specifications and configuration,
   # please read the Readme file.
-  class FilesystemI18n < Nanoc3::DataSource
+  class FilesystemI18n < Nanoc::DataSource
     identifier :filesystem_i18n
 
     # The VCS that will be called when adding, deleting and moving files. If
     # no VCS has been set, or if the VCS has been set to `nil`, a dummy VCS
     # will be returned.
     #
-    # @return [Nanoc3::Extra::VCS, nil] The VCS that will be used.
+    # @return [Nanoc::Extra::VCS, nil] The VCS that will be used.
     def vcs
-      @vcs ||= Nanoc3::Extra::VCSes::Dummy.new
+      @vcs ||= Nanoc::Extra::VCSes::Dummy.new
     end
     attr_writer :vcs
 
-    # See {Nanoc3::DataSource#up}.
+    # See {Nanoc::DataSource#up}.
     def up
       load_config(@config)
     end
 
-    # See {Nanoc3::DataSource#down}.
+    # See {Nanoc::DataSource#down}.
     def down
       @config_loaded = false
     end
 
-    # See {Nanoc3::DataSource#setup}.
+    # See {Nanoc::DataSource#setup}.
     def setup
       # Create directories
       %w( content layouts lib ).each do |dir|
@@ -46,22 +51,22 @@ module Nanoc3::DataSources
       end
     end
 
-    # See {Nanoc3::DataSource#items}.
+    # See {Nanoc::DataSource#items}.
     def items
-      load_objects('content', 'item', Nanoc3::Item)
+      load_objects('content', 'item', Nanoc::Item)
     end
 
-    # See {Nanoc3::DataSource#layouts}.
+    # See {Nanoc::DataSource#layouts}.
     def layouts
-      load_objects('layouts', 'layout', Nanoc3::Layout)
+      load_objects('layouts', 'layout', Nanoc::Layout)
     end
 
-    # See {Nanoc3::DataSource#create_item}.
+    # See {Nanoc::DataSource#create_item}.
     def create_item(content, attributes, identifier, params={})
       create_object('content', content, attributes, identifier, params)
     end
 
-    # See {Nanoc3::DataSource#create_layout}.
+    # See {Nanoc::DataSource#create_layout}.
     def create_layout(content, attributes, identifier, params={})
       create_object('layouts', content, attributes, identifier, params)
     end
@@ -107,8 +112,8 @@ module Nanoc3::DataSources
       parent_path = File.dirname(meta_filename)
 
       # Notify
-      Nanoc3::NotificationCenter.post(:file_created, meta_filename)
-      Nanoc3::NotificationCenter.post(:file_created, content_filename)
+      Nanoc::NotificationCenter.post(:file_created, meta_filename)
+      Nanoc::NotificationCenter.post(:file_created, content_filename)
 
       # Create files
       FileUtils.mkdir_p(parent_path)
@@ -143,7 +148,7 @@ module Nanoc3::DataSources
         is_binary = !!(content_filename && !@site.config[:text_extensions].include?(File.extname(content_filename)[1..-1]))
 
         # Read content and metadata
-        meta, content_or_filename = parse(content_filename, meta_filename, kind, (is_binary && klass == Nanoc3::Item))
+        meta, content_or_filename = parse(content_filename, meta_filename, kind, (is_binary && klass == Nanoc::Item))
 
         # Is locale content?
         # - excluded content with locale meta IS a locale content
@@ -165,7 +170,7 @@ module Nanoc3::DataSources
             content_filename = filename_for(base_filename, content_ext)
 
             # Read content and metadata for localized content
-            meta, content_or_filename = parse(content_filename, meta_filename, kind, (is_binary && klass == Nanoc3::Item))
+            meta, content_or_filename = parse(content_filename, meta_filename, kind, (is_binary && klass == Nanoc::Item))
 
             # merge meta for current locale, default locale meta used by
             # default is meta don't have key
@@ -184,7 +189,7 @@ module Nanoc3::DataSources
             # WARNING :file is deprecated; please create a File object manually
             # using the :content_filename or :meta_filename attributes.
             # TODO [in nanoc 4.0] remove me
-            :file             => content_filename ? Nanoc3::Extra::FileProxy.new(content_filename) : nil
+            :file             => content_filename ? Nanoc::Extra::FileProxy.new(content_filename) : nil
           }.merge(meta)
 
           # Get identifier

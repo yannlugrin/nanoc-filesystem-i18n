@@ -1,6 +1,11 @@
 # encoding: utf-8
 
-require 'nanoc3'
+begin
+  require 'nanoc'
+rescue LoadError # fallback to nanoc3 namespace
+  require 'nanoc3'
+  Nanoc = Nanoc3
+end
 require 'i18n'
 
 module I18n

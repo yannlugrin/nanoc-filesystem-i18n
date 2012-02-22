@@ -1,15 +1,17 @@
-require 'helper'
+# encoding: utf-8
+
+require './test/helper'
 
 class TestNanocFilesystemI18n < MiniTest::Unit::TestCase
 
-  include Nanoc3::TestHelpers
+  include Nanoc::TestHelpers
 
   def new_data_source(params=nil)
     # Mock site
-    site = Nanoc3::Site.new({})
+    site = Nanoc::Site.new({})
 
     # Create data source
-    data_source = Nanoc3::DataSources::FilesystemI18n.new(site, nil, nil, params)
+    data_source = Nanoc::DataSources::FilesystemI18n.new(site, nil, nil, params)
     data_source.up
 
     # Done
@@ -29,8 +31,8 @@ class TestNanocFilesystemI18n < MiniTest::Unit::TestCase
     assert File.file?('foobar/asdf.html')
 
     # Check file meta
-    expected = "--- \nfoo: bar\n"
-    assert_equal expected, File.read('foobar/asdf.yaml')
+    expected = "---\nfoo: bar\n"
+    assert_equal YAML.load(expected), YAML.load(File.read('foobar/asdf.yaml'))
 
     # Check file content
     expected = "content here"
@@ -50,8 +52,8 @@ class TestNanocFilesystemI18n < MiniTest::Unit::TestCase
     assert File.file?('foobar/index.html')
 
     # Check file meta
-    expected = "--- \nfoo: bar\n"
-    assert_equal expected, File.read('foobar/index.yaml')
+    expected = "---\nfoo: bar\n"
+    assert_equal YAML.load(expected), YAML.load(File.read('foobar/index.yaml'))
 
     # Check file content
     expected = "content here"
