@@ -4,5 +4,6 @@ source 'http://rubygems.org'
 gemspec
 
 # Other development dependancies
+gem 'rake'
 gem 'guard'
 gem 'guard-minitest', '>= 0.4.0.rc2'

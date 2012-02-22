@@ -1,5 +1,7 @@
 = nanoc-filesystem-i18n
 
+{<img src="https://secure.travis-ci.org/yannlugrin/nanoc-filesystem-i18n.png" />}[http://travis-ci.org/yannlugrin/nanoc-filesystem-i18n]
+
 filesystem_i18n is a localized data source for a nanoc site. It stores
 all data as files on the hard disk and is fully compatible with default
 nanoc data sources {Nanoc3::DataSources::FilesystemUnified} and

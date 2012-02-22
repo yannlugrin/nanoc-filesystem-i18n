@@ -31,8 +31,8 @@ class TestNanocFilesystemI18n < MiniTest::Unit::TestCase
     assert File.file?('foobar/asdf.html')
 
     # Check file meta
-    expected = "--- \nfoo: bar\n"
-    assert_equal expected, File.read('foobar/asdf.yaml')
+    expected = "---\nfoo: bar\n"
+    assert_equal YAML.load(expected), YAML.load(File.read('foobar/asdf.yaml'))
 
     # Check file content
     expected = "content here"
@@ -52,8 +52,8 @@ class TestNanocFilesystemI18n < MiniTest::Unit::TestCase
     assert File.file?('foobar/index.html')
 
     # Check file meta
-    expected = "--- \nfoo: bar\n"
-    assert_equal expected, File.read('foobar/index.yaml')
+    expected = "---\nfoo: bar\n"
+    assert_equal YAML.load(expected), YAML.load(File.read('foobar/index.yaml'))
 
     # Check file content
     expected = "content here"
