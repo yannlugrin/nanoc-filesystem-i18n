@@ -4,8 +4,8 @@
 
 filesystem_i18n is a localized data source for a nanoc site. It stores
 all data as files on the hard disk and is fully compatible with default
-nanoc data sources {Nanoc3::DataSources::FilesystemUnified} and
-{Nanoc3::DataSources::FilesystemVerbose}.
+nanoc data sources {Nanoc::DataSources::FilesystemUnified} and
+{Nanoc::DataSources::FilesystemVerbose}.
 
 Nanoc is a Ruby web publishing system for building small to medium-sized
 websites. It is a tool that runs on your local computer and compiles documents
@@ -30,11 +30,11 @@ server. For more information, please see Nanoc site.
 
 And add following require in your `lib/default.rb` file:
 
- require 'nanoc3/data_sources/filesystem_i18n'
+ require 'nanoc/data_sources/filesystem_i18n'
 
 Or add following line in your `Gemfile` file:
 
- gem 'nanoc-filesystem-i18n', :require => 'nanoc3/data_sources/filesystem_i18n'
+ gem 'nanoc-filesystem-i18n', :require => 'nanoc/data_sources/filesystem_i18n'
 
 Edit `config.yaml` file of your nanoc site and change data_sources type
 from `filesystem_unified` or `filesystem_verbose` to `filesystem_i18n`:

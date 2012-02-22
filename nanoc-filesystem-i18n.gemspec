@@ -1,10 +1,10 @@
 # encoding: utf-8
 $:.push File.expand_path('../lib', __FILE__)
-require 'nanoc3/data_sources/filesystem_i18n/version'
+require 'nanoc/data_sources/filesystem_i18n/version'
 
 Gem::Specification.new do |s|
   s.name        = 'nanoc-filesystem-i18n'
-  s.version     = Nanoc3::DataSources::FilesystemI18nVersion
+  s.version     = Nanoc::DataSources::FilesystemI18nVersion
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Yann Lugrin']
   s.email       = ['yann.lugrin@sans-savoir.net']

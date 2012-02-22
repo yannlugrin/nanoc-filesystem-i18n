@@ -4,14 +4,14 @@ require './test/helper'
 
 class TestNanocFilesystemI18n < MiniTest::Unit::TestCase
 
-  include Nanoc3::TestHelpers
+  include Nanoc::TestHelpers
 
   def new_data_source(params=nil)
     # Mock site
-    site = Nanoc3::Site.new({})
+    site = Nanoc::Site.new({})
 
     # Create data source
-    data_source = Nanoc3::DataSources::FilesystemI18n.new(site, nil, nil, params)
+    data_source = Nanoc::DataSources::FilesystemI18n.new(site, nil, nil, params)
     data_source.up
 
     # Done

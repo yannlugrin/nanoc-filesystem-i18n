@@ -2,17 +2,17 @@
 
 require './test/helper'
 
-class Nanoc3::DataSources::FilesystemUnifiedTest < MiniTest::Unit::TestCase
+class Nanoc::DataSources::FilesystemUnifiedTest < MiniTest::Unit::TestCase
 
-  include Nanoc3::TestHelpers
+  include Nanoc::TestHelpers
 
   def new_data_source(params=nil)
     # Mock site
-    site = Nanoc3::Site.new({})
+    site = Nanoc::Site.new({})
 
     # Create data source
     # I18n: call `up` to setup locale config
-    data_source = Nanoc3::DataSources::FilesystemI18n.new(site, nil, nil, params)
+    data_source = Nanoc::DataSources::FilesystemI18n.new(site, nil, nil, params)
     data_source.up
 
     # Done
@@ -89,7 +89,7 @@ class Nanoc3::DataSources::FilesystemUnifiedTest < MiniTest::Unit::TestCase
     File.open('foo/stuff.dat', 'w') { |io| io.write("random binary data") }
 
     # Load
-    items = data_source.send(:load_objects, 'foo', 'item', Nanoc3::Item)
+    items = data_source.send(:load_objects, 'foo', 'item', Nanoc::Item)
 
     # Check
     assert_equal 1, items.size
@@ -107,7 +107,7 @@ class Nanoc3::DataSources::FilesystemUnifiedTest < MiniTest::Unit::TestCase
     File.open('foo/stuff.dat', 'w') { |io| io.write("random binary data") }
 
     # Load
-    items = data_source.send(:load_objects, 'foo', 'item', Nanoc3::Layout)
+    items = data_source.send(:load_objects, 'foo', 'item', Nanoc::Layout)
 
     # Check
     assert_equal 1, items.size
